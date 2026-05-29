@@ -1,0 +1,76 @@
+version: "3.8"
+
+services:
+  preprocess:
+    profiles: ["cpu", "gpu"]
+    build:
+      context: .
+      dockerfile: implementations/cpu/Dockerfile
+    mem_limit: 8g
+    command: python -m trf_baseline.preprocess
+    volumes:
+      - ./data:/app/data
+      - ./results:/app/results
+
+  cpu:
+    profiles: ["cpu"]
+    depends_on:
+      preprocess:
+        condition: service_completed_successfully
+    build:
+      context: .
+      dockerfile: implementations/cpu/Dockerfile
+    mem_limit: 8g
+    command: python implementations/cpu/main.py
+    volumes:
+      - ./data:/app/data
+      - ./results:/app/results
+
+  pytorch:
+    profiles: ["gpu"]
+    depends_on:
+      preprocess:
+        condition: service_completed_successfully
+    build:
+      context: .
+      dockerfile: implementations/pytorch/Dockerfile
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    command: python implementations/pytorch/main.py
+    volumes:
+      - ./data:/app/data
+      - ./results:/app/results
+
+  cuda:
+    profiles: ["gpu"]
+    depends_on:
+      preprocess:
+        condition: service_completed_successfully
+    build:
+      context: .
+      dockerfile: implementations/cuda/Dockerfile
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    command: python implementations/cuda/main.py
+    volumes:
+      - ./data:/app/data
+      - ./results:/app/results
+
+  compare:
+    profiles: ["cpu"]
+    build:
+      context: .
+      dockerfile: implementations/cpu/Dockerfile
+    command: python quality/compare.py
+    volumes:
+      - ./results:/app/results

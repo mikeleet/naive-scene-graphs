@@ -1,0 +1,7 @@
+numpy
+scikit-learn
+h5py
+shapely
+Pillow
+jupyter
+ipython

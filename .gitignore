@@ -18,3 +18,4 @@ venv/
 .DS_Store
 *.egg-info/
 *.pkl
+!deploy/model/*.pkl

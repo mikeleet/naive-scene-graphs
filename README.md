@@ -11,9 +11,7 @@ built same baseline 3 ways. then gcp.
 ## approach
 
 cpu: sklearn catnb / python:3.11-slim / macos m4 ✓
-pytorch: torch gpu / nvidia/cuda:12.4-runtime / win11 4090
-cuda: kernels.cu / nvidia/cuda:12.4-devel / win11 4090
-gcp: fastapi, tf / python:3.11-slim / cloud run
+deploy: fastapi + docker / python:3.11-slim ✓
 
 ### platform notes
 
@@ -58,11 +56,14 @@ sklearn, 2 classifiers (exist + pred). 1.8s train, 4.7s infer, 10M train pairs,
 ### m4 — paper match ✓
 all 3 feature combos within 3% of paper. details: [docs/paper-match.ipynb](docs/paper-match.ipynb)
 
-### m5 — pytorch gpu
-tensorized nb on gpu. no sklearn. async streams.
+### m5 — docker prediction service ✓
+fastapi endpoint, exported sklearn model, input validation + batch mode.
+test.sh covers health, predict, 5 error cases, batch. pytorch skipped —
+model trains in 1.8s. gpu conversion makes more sense on gcp where infra
+already handles gpu inference.
 
-### m6 — cuda kernels
-3 kernels: feats, nb infer, top-k reduce. compiled at build.
+### m6 — gcp
+cloud run + terraform
 
 ### m7 — gcp
 cloud run api, terraform
@@ -79,8 +80,7 @@ populate table, final numbers
 - [x] sklearn categoricalnb baseline (1.8s train, 10M pairs)
 - [x] paper match — all 3 feature combos within 3%
 - [x] image preview — real vg photos + v1.2 boxes + relationship arrows
-- [ ] pytorch gpu nb
-- [ ] raw cuda kernels
+- [x] docker prediction service — fastapi + exported model, test.sh passes
 - [ ] gcp cloud run api + terraform
 - [ ] gpu visual features on vertex ai
 - [ ] benchmark table populated

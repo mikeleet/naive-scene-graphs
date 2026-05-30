@@ -1,0 +1,12 @@
+FROM pytorch/pytorch:2.0.1-cuda11.7-cudnn8-runtime
+
+WORKDIR /app
+RUN pip install --no-cache-dir torchvision fastapi uvicorn pillow google-cloud-storage
+
+COPY serve.py /app/serve.py
+COPY startup.sh /app/startup.sh
+RUN chmod +x /app/startup.sh
+
+ENV MODEL_TYPE=trained
+EXPOSE 8080
+CMD ["/app/startup.sh"]

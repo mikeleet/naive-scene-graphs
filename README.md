@@ -12,6 +12,7 @@ built same baseline 3 ways. then gcp.
 
 cpu: sklearn catnb / python:3.11-slim / macos m4 ✓
 deploy: fastapi + docker / python:3.11-slim ✓
+gcp: cloud run + terraform / route1 train, route2 3-endpoint deploy
 
 ### platform notes
 
@@ -62,13 +63,19 @@ test.sh covers health, predict, 5 error cases, batch. pytorch skipped —
 model trains in 1.8s. gpu conversion makes more sense on gcp where infra
 already handles gpu inference.
 
-### m6 — gcp
-cloud run + terraform
+### m6 — gcp route 1 (training)
+resnet-50 from scratch on vg150 crops. vertex ai t4 gpu. full logs,
+tensorboard, hyperparameter tracking. outputs best_checkpoint.pth.
+
+### m7 — gcp route 2 (3-model deploy)
+3 cloud run endpoints: nb, visual-pretrained, visual-trained.
+terraform: 5 modules (registry, nb, visual×2, vertex ai, iam).
+combined prediction script compares geometric vs visual accuracy.
 
 ### m7 — gcp
 cloud run api, terraform
 
-### m9 — results
+### m8 — benchmark + results
 populate table, final numbers
 
 ## checklist
@@ -81,7 +88,7 @@ populate table, final numbers
 - [x] paper match — all 3 feature combos within 3%
 - [x] image preview — real vg photos + v1.2 boxes + relationship arrows
 - [x] docker prediction service — fastapi + exported model, test.sh passes
-- [ ] gcp cloud run api + terraform
-- [ ] gpu visual features on vertex ai
+- [ ] gcp route 1 — resnet-50 training on vertex ai
+- [ ] gcp route 2 — 3-model cloud run deploy + terraform
 - [ ] benchmark table populated
 - [ ] questions for interview

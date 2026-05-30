@@ -1,0 +1,35 @@
+# apply after docker images are pushed to artifact registry
+# run: terraform apply -target="module.cloud_run_nb" etc
+
+module "cloud_run_nb" {
+  source       = "./modules/cloud_run_nb"
+  project      = var.project_id
+  region       = var.region
+  env          = var.env
+  registry_url = module.artifact_registry.url
+  sa_email     = module.iam.sa_email
+}
+
+module "cloud_run_visual_pretrained" {
+  source       = "./modules/cloud_run_visual"
+  project      = var.project_id
+  region       = var.region
+  env          = var.env
+  service_name = "visual-pretrained"
+  image_tag    = "visual-pretrained"
+  model_type   = "pretrained"
+  registry_url = module.artifact_registry.url
+  sa_email     = module.iam.sa_email
+}
+
+module "cloud_run_visual_trained" {
+  source       = "./modules/cloud_run_visual"
+  project      = var.project_id
+  region       = var.region
+  env          = var.env
+  service_name = "visual-trained"
+  image_tag    = "visual-trained"
+  model_type   = "trained"
+  registry_url = module.artifact_registry.url
+  sa_email     = module.iam.sa_email
+}

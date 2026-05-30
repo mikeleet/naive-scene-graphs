@@ -19,3 +19,17 @@ venv/
 *.egg-info/
 *.pkl
 !deploy/model/*.pkl
+gcp/preprocess/output/*.jpg
+gcp/preprocess/output/*.png
+gcp/logs/*
+!gcp/logs/.gitkeep
+gcp/route1_train/results/*
+!gcp/route1_train/results/.gitkeep
+
+# terraform
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+.terraform.lock.hcl

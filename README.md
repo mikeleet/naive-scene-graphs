@@ -63,6 +63,13 @@ test.sh covers health, predict, 5 error cases, batch. pytorch skipped —
 model trains in 1.8s. gpu conversion makes more sense on gcp where infra
 already handles gpu inference.
 
+### m5.5 — crop preprocessing (running)
+1.1M box crops from v1.2 annotations via vertex ai cpu job.
+zips on local ssd, python gcs client for upload, 4 workers parallel,
+psutil resource monitoring. crops saved as tar archives on gcs,
+train/test split via h5 split masks. output: crops_train_w*.tar +
+crops_test_w*.tar + index_train.jsonl + index_test.jsonl + class_weights.json
+
 ### m6 — gcp route 1 (training)
 resnet-50 from scratch on vg150 crops. vertex ai t4 gpu. full logs,
 tensorboard, hyperparameter tracking. outputs best_checkpoint.pth.
@@ -71,9 +78,6 @@ tensorboard, hyperparameter tracking. outputs best_checkpoint.pth.
 3 cloud run endpoints: nb, visual-pretrained, visual-trained.
 terraform: 5 modules (registry, nb, visual×2, vertex ai, iam).
 combined prediction script compares geometric vs visual accuracy.
-
-### m7 — gcp
-cloud run api, terraform
 
 ### m8 — benchmark + results
 populate table, final numbers
@@ -88,6 +92,7 @@ populate table, final numbers
 - [x] paper match — all 3 feature combos within 3%
 - [x] image preview — real vg photos + v1.2 boxes + relationship arrows
 - [x] docker prediction service — fastapi + exported model, test.sh passes
+- [ ] crop preprocessing — vertex ai cpu, 1.1M crops → gcs tar archives (running)
 - [ ] gcp route 1 — resnet-50 training on vertex ai
 - [ ] gcp route 2 — 3-model cloud run deploy + terraform
 - [ ] benchmark table populated
